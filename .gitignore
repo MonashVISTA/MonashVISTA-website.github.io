@@ -1,0 +1,16 @@
+# Operating system junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor settings
+.vscode/
+.idea/
+
+# Secrets / local config (never commit these)
+.env
+.env.*
+
+# Hosting & tooling (useful if you move to Vercel or add tools later)
+.vercel/
+node_modules/
