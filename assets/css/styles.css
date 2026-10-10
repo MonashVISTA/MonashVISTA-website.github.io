@@ -1,26 +1,32 @@
 /* ==========================================================================
    Monash VISTA — site styles
    Built from the VISTA Design System (colours, type, spacing, components).
+   Used by every page: index.html, team.html, projects.html
    Sections:
      1. Tokens (colours, spacing, fonts)  – change brand values here
      2. Base
-     3. Components (button, link, label, tracking frame, chevron cuts)
+     3. Components (button, link, label, tracking frame, chevron cuts, glow)
      4. Layout helpers
      5. Header & nav
-     6. Page sections (hero, about, projects, values, get involved, footer)
-     7. Placeholders (remove once the team's text is in)
-     8. Phone / tablet adjustments
-     9. Reduced motion
+     6. Homepage sections (hero, about, vision/mission/purpose, team, projects, get involved)
+     7. Inner pages (page header, team cards, project rows, closing band)
+     8. Footer
+     9. Placeholders (remove once the team's text is in)
+    10. Phone / tablet adjustments
+    11. Reduced motion
    ========================================================================== */
 
 /* 1. TOKENS ---------------------------------------------------------------- */
 :root,
 [data-theme="light"] {
   --mint: #05f2af;
-  --mint-deep: #027353;     /* mint for TEXT on white (Mint itself is too light) */
+  --mint-deep: #027353;     /* mint for TEXT on light backgrounds (Mint itself is too light) */
   --mint-wash: #e1fef6;
   --black: #000000;
   --white: #ffffff;
+  --off-white: #e9eeec;     /* the soft light background used for light sections */
+  --body-dark: #2a2e31;     /* very dark grey body text on light sections */
+  --body-light: #c4cbcf;    /* light grey body text on dark sections */
 
   --surface: #ffffff;
   --surface-raised: #f2f6f8;
@@ -46,6 +52,9 @@
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --page-max: 1280px;
+
+  /* The green glow used behind headers and closing bands */
+  --glow: radial-gradient(ellipse 75% 85% at 50% 100%, #073f2f 0%, #052e22 30%, #021a13 55%, #000 80%);
 }
 
 /* Any element with data-theme="dark" flips these */
@@ -60,6 +69,8 @@
   --on-track: var(--black);
   --focus: var(--mint);
 }
+/* Light sections use the soft off-white instead of pure white */
+[data-theme="light"].soft { --surface: var(--off-white); }
 
 /* 2. BASE ------------------------------------------------------------------ */
 *, *::before, *::after { box-sizing: border-box; }
@@ -75,7 +86,7 @@ body {
 }
 img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; }
-h1, h2, h3, p, figure, ol { margin: 0; }
+h1, h2, h3, p, figure, ol, ul { margin: 0; }
 /* Every themed block paints its own ground and text colour */
 [data-theme] { background: var(--surface); color: var(--ink); }
 
@@ -88,6 +99,7 @@ h1, h2, h3, p, figure, ol { margin: 0; }
 
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 
+/* Big bold, extra-wide headings */
 .display {
   font-weight: 700;
   font-stretch: 118%;
@@ -95,14 +107,16 @@ h1, h2, h3, p, figure, ol { margin: 0; }
   line-height: 0.98;
   text-wrap: balance;
 }
+.h-section { font-size: 48px; }           /* About us, Meet our team, Get involved … */
+.h-page    { font-size: 58px; line-height: 0.96; letter-spacing: -0.025em; }  /* Meet the team, Our projects */
 .mono { font-family: var(--font-mono); }
 
 /* 3. COMPONENTS ------------------------------------------------------------ */
 
-/* Section label: 01.ABOUT */
+/* Signpost label: 01.ABOUT US */
 .label {
-  display: inline-flex; align-items: baseline;
-  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  display: inline-flex; align-items: baseline; align-self: flex-start;
+  font-family: var(--font-mono); font-size: 14px; font-weight: 500;
   letter-spacing: 0.08em; line-height: 1.3; text-transform: uppercase;
   color: var(--ink-muted);
 }
@@ -187,9 +201,24 @@ h1, h2, h3, p, figure, ol { margin: 0; }
 .cut--notch { clip-path: polygon(0 0, 44% 0, 50% var(--cut-lg), 56% 0, 100% 0, 100% 100%, 0 100%); }
 .cut--blade { clip-path: polygon(0 0, 100% 0, 100% 72%, 78% 100%, 0 100%); }
 
+/* Green glow background (headers, closing bands, homepage team section) */
+.glow { background-color: var(--black); background-image: var(--glow); }
+
+/* Photo placeholder (until real photos arrive) */
+.photo-todo {
+  display: flex; align-items: center; justify-content: center;
+  background-color: var(--surface-raised);
+  background-image: radial-gradient(var(--line) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  font: 400 13px/1.4 var(--font-mono); color: var(--ink-muted); text-align: center; padding: var(--space-4);
+}
+
 /* 4. LAYOUT HELPERS -------------------------------------------------------- */
 .wrap { width: 100%; max-width: var(--page-max); margin: 0 auto; padding: 0 var(--space-8); }
 .stack { display: flex; flex-direction: column; }
+.lead { font-size: 19px; line-height: 1.55; font-weight: 300; }
+.muted { color: var(--ink-muted); }
+.caption { margin-top: 10px; font: 400 13px/1.4 var(--font-mono); color: var(--ink-muted); }
 
 /* 5. HEADER & NAV ---------------------------------------------------------- */
 .site-header {
@@ -198,13 +227,15 @@ h1, h2, h3, p, figure, ol { margin: 0; }
   padding-top: 28px; padding-bottom: 28px;
   color: var(--white);
 }
+.site-header--static { position: relative; }      /* inner pages: header sits in the flow */
 .site-header__logo img { width: 100px; }
 .site-nav { display: flex; align-items: center; gap: 28px; }
 .site-nav__link {
   color: var(--white); text-decoration: none; font-size: 15px; font-weight: 500;
   padding: 12px 4px; transition: color 160ms var(--ease);
 }
-.site-nav__link:hover { color: var(--mint); }
+.site-nav__link:hover,
+.site-nav__link[aria-current="page"] { color: var(--mint); }
 .menu-toggle {
   display: none;
   min-height: 44px; padding: 0 var(--space-4);
@@ -213,7 +244,7 @@ h1, h2, h3, p, figure, ol { margin: 0; }
   cursor: pointer;
 }
 
-/* 6. SECTIONS -------------------------------------------------------------- */
+/* 6. HOMEPAGE SECTIONS ----------------------------------------------------- */
 
 /* Hero */
 .hero { position: relative; overflow: hidden; min-height: 860px; display: flex; align-items: center; }
@@ -228,53 +259,47 @@ h1, h2, h3, p, figure, ol { margin: 0; }
 .hero__name b { font-weight: 600; color: var(--mint); }
 .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-12); }
 
-/* Shared section heading block */
-.section-head { gap: var(--space-3); }
-.section-head h2 { font-size: clamp(36px, 4.4vw, 56px); }
-
-/* About */
-.about { padding: var(--space-24) 0 var(--space-32); }
+/* About us (off-white) */
+.about { padding: 56px 0 48px; }
 .about__grid { display: flex; flex-wrap: wrap; gap: var(--space-12) var(--space-16); align-items: flex-start; }
-.about__text { flex: 7 1 520px; min-width: 0; }
-.about__body { margin-top: var(--space-6); max-width: 60ch; gap: 20px; }
-.lead { font-size: 19px; line-height: 1.55; font-weight: 300; }
-.muted { color: var(--ink-muted); }
-.about__photo { flex: 5 1 340px; min-width: 0; margin-top: -200px; }
-.about__photo .cut { aspect-ratio: 4 / 5; }
-.caption { margin-top: 10px; font: 400 13px/1.4 var(--font-mono); color: var(--ink-muted); }
+.about__text { flex: 7 1 520px; min-width: 0; gap: var(--space-6); }
+.about__text p { max-width: 46ch; color: var(--body-dark); }
+.about__photo { flex: 5 1 340px; min-width: 0; margin: -112px 0 -40px; position: relative; z-index: 2; }
+.about__photo .cut { aspect-ratio: 6 / 7; }
 
-/* Projects: three equal columns, stepped down */
-.projects { padding: 112px 0 160px; }
-.projects__list { display: flex; flex-wrap: wrap; gap: 40px; margin-top: var(--space-16); align-items: flex-start; list-style: none; padding: 0; }
-.project { flex: 1 1 300px; min-width: 0; gap: var(--space-4); }
-.project:nth-child(2) { margin-top: 72px; }
-.project:nth-child(3) { margin-top: 144px; }
-.project .track { margin-top: 22px; }
-.project .cut { aspect-ratio: 4 / 3; }
-.project__num { font: 400 13px/1 var(--font-mono); color: var(--accent); }
-.project h3 { font-size: 30px; line-height: 1.1; font-weight: 600; }
-.project__line { font-size: 17px; line-height: 1.5; font-weight: 300; }
-.photo-todo {
-  aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center;
-  background-color: var(--surface-raised);
-  background-image: radial-gradient(var(--line) 1.5px, transparent 1.5px);
-  background-size: 16px 16px;
-  font: 400 13px/1.4 var(--font-mono); color: var(--ink-muted); text-align: center; padding: var(--space-4);
-}
+/* Vision / Mission / Purpose (black) */
+.vmp { padding: 168px 0 64px; }
+.vmp__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.vmp__item { padding: 0 32px; display: flex; flex-direction: column; gap: 18px; text-align: center; }
+.vmp__item h3 { font-size: 30px; line-height: 1; color: var(--white); }
+.vmp__rule { width: 160px; height: 1px; background: var(--mint); align-self: center; }
+.vmp__item p { color: var(--ink-muted); }
 
-/* Values */
-.values { padding: 112px 0 var(--space-24); }
-.values__grid { display: flex; flex-wrap: wrap; gap: var(--space-12) var(--space-24); }
-.values__head { flex: 4 1 280px; min-width: 0; }
-.values__head h2 { font-size: clamp(34px, 3.8vw, 48px); }
-.values__list { flex: 8 1 520px; min-width: 0; list-style: none; padding: 0; border-top: 1px solid var(--line); }
-.values__item { display: flex; gap: var(--space-8); align-items: baseline; padding: 28px 0; border-bottom: 1px solid var(--line); }
-.values__num { flex: 0 0 32px; font: 400 13px/1 var(--font-mono); color: var(--accent); }
-.values__name { font-size: 24px; font-weight: 600; line-height: 1.2; }
-.values__desc { margin-top: var(--space-2); font-weight: 300; color: var(--ink-muted); }
+/* Meet our team (green glow) */
+.home-team { padding: 128px 0 144px; }
+.home-team__grid,
+.home-projects__grid { display: flex; flex-wrap: wrap; gap: 64px 80px; align-items: center; }
+.home-team__photos { flex: 7 1 520px; min-width: 0; position: relative; padding-bottom: 96px; }
+.home-team__photos > .cut:first-child { aspect-ratio: 3 / 2; width: 88%; }
+.home-team__inset { position: absolute; right: 0; bottom: 0; width: 42%; aspect-ratio: 4 / 3; }
+.home-team__text { flex: 5 1 340px; min-width: 0; gap: 20px; }
+.home-team__text p { max-width: 44ch; color: var(--body-light); }
+.home-team__text .btn,
+.home-projects__text .btn { align-self: flex-start; margin-top: var(--space-3); }
 
-/* Get involved */
+/* Learn about our projects (black) */
+.home-projects { padding: 128px 0 160px; }
+.home-projects__text { flex: 5 1 340px; min-width: 0; gap: 20px; }
+.home-projects__text h2 { font-size: 54px; line-height: 0.95; letter-spacing: -0.02em; }
+.home-projects__text p { max-width: 42ch; }
+.home-projects__photos { flex: 7 1 520px; min-width: 0; position: relative; padding: 24px 0 120px; }
+.home-projects__photos > .track { width: 78%; }
+.home-projects__photos > .track .cut { aspect-ratio: 3 / 2; }
+.home-projects__inset { position: absolute; right: 0; bottom: 0; width: 44%; aspect-ratio: 4 / 3; outline: 10px solid var(--black); }
+
+/* Get involved (off-white) */
 .involve { padding: var(--space-8) 0 var(--space-32); }
+.involve h2 { margin-top: var(--space-4); }
 .involve__grid { display: flex; flex-wrap: wrap; gap: var(--space-6); margin-top: var(--space-8); align-items: flex-start; }
 .involve__kicker { font: 500 12px/1.3 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .partner {
@@ -290,7 +315,78 @@ h1, h2, h3, p, figure, ol { margin: 0; }
 .join h3 { font-size: 32px; line-height: 1.1; font-weight: 600; }
 .join .btn { align-self: flex-start; margin-top: var(--space-2); }
 
-/* Footer */
+/* 7. INNER PAGES (team.html, projects.html) -------------------------------- */
+
+/* Page header with the green glow */
+.page-header__body { padding-top: 112px; padding-bottom: 120px; gap: 20px; }
+.page-header__body p { margin-top: var(--space-2); max-width: 46ch; color: var(--body-light); }
+
+/* Section on an inner page */
+.page-section { padding: 96px 0 112px; }
+.page-section h2 { margin-top: var(--space-4); }
+
+/* People cards (Team page) */
+.people { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 64px 40px; margin-top: 56px; align-items: stretch; list-style: none; padding: 0; }
+.person { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.person__photo { width: 78%; aspect-ratio: 4 / 5; background: var(--surface-raised); }
+.person__name { margin-top: 10px; font-size: 24px; line-height: 1.2; font-weight: 600; }
+.person__role { font: 400 13px/1.4 var(--font-mono); letter-spacing: 0.08em; color: var(--accent); }
+.person__title { margin-top: -6px; font-size: 13px; line-height: 1.4; color: var(--ink-muted); }
+.person__bio p { font-size: 13px; line-height: 1.6; font-weight: 300; }
+[data-theme="dark"] .person__bio p { color: var(--body-light); }
+[data-theme="light"] .person__bio p { color: var(--body-dark); }
+.person__bio { display: flex; flex-direction: column; gap: 14px; }
+.person__social {
+  align-self: flex-start; margin-top: auto; padding-top: 8px;
+  font: 400 13px/1.4 var(--font-mono); letter-spacing: 0.08em; text-decoration: none; color: var(--ink);
+}
+.person__social:hover { color: var(--accent); }
+
+/* Supervisors: first ~11 lines, fading out, then "Read more" */
+.js .person__bio--clamp { gap: 10px; height: 222px; margin-bottom: -8px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 72%, transparent 100%); }
+.js .person__bio--clamp.is-open { height: auto; margin-bottom: 0; -webkit-mask-image: none; mask-image: none; }
+.read-more {
+  align-self: flex-start; margin-top: auto; padding: 0 0 2px;
+  background: none; border: 0; border-bottom: 1.5px solid var(--accent); cursor: pointer;
+  color: var(--accent); font: 600 15px/1.3 var(--font-sans);
+}
+.person__bio--clamp.is-open + .read-more { margin-top: 0; }
+html:not(.js) .read-more { display: none; }
+.read-more ~ .person__social { margin-top: 0; }
+
+/* "This could be you" card */
+.join-card {
+  width: 78%; aspect-ratio: 4 / 5; min-height: 260px; align-self: start;
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  padding: 28px; border: 1px dashed var(--mint); color: var(--white); text-decoration: none;
+}
+.join-card__kicker { font: 500 13px/1.3 var(--font-mono); letter-spacing: 0.08em; color: var(--mint); }
+.join-card__title { font-size: 28px; line-height: 1.05; }
+.join-card__cta { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; color: var(--mint); }
+
+/* Project rows (Projects page) */
+.project-list { padding: 112px 0 144px; overflow: hidden; }
+.project-list .wrap { display: flex; flex-direction: column; gap: 176px; }
+.prow { display: flex; gap: 72px; align-items: center; }
+.prow__text { flex: 5 1 0; min-width: 0; gap: 18px; position: relative; }
+.prow__kicker { font: 500 14px/1.3 var(--font-mono); letter-spacing: 0.08em; color: var(--mint); }
+.prow__text h2 { font-size: 30px; line-height: 1.1; }
+.prow__text .lead { max-width: 42ch; color: var(--body-light); }
+.prow__media { flex: 7 1 0; min-width: 0; position: relative; }
+.prow__media .cut, .prow__media .photo-todo { position: relative; aspect-ratio: 4 / 3; }
+.prow__glow { position: absolute; inset: -90px -60px; pointer-events: none;
+  background: radial-gradient(ellipse 60% 60% at var(--gx, 35%) 55%, rgba(7,92,66,.55) 0%, rgba(5,46,34,.35) 40%, rgba(0,0,0,0) 72%); }
+.prow--flip .prow__glow { --gx: 65%; }
+
+/* Closing band (green glow) */
+.closing { padding: 120px 0 128px; }
+.closing .wrap { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 28px; }
+.closing__text { max-width: 34ch; font-stretch: 112%; font-size: 30px; line-height: 1.3; font-weight: 500; letter-spacing: -0.01em; }
+.closing__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-4); }
+
+/* 8. FOOTER ---------------------------------------------------------------- */
 .site-footer { padding: 80px 0 40px; }
 .site-footer__grid { display: flex; flex-wrap: wrap; gap: var(--space-12) 80px; align-items: flex-start; }
 .site-footer__lockup { width: 120px; }
@@ -298,6 +394,7 @@ h1, h2, h3, p, figure, ol { margin: 0; }
 .site-footer__heading { font: 500 12px/1.3 var(--font-mono); letter-spacing: 0.08em; color: var(--ink-muted); }
 .site-footer a { text-decoration: none; }
 .site-footer a:hover { color: var(--mint); }
+.site-footer__email { color: var(--mint); }
 .site-footer__social { font: 400 13px/1.6 var(--font-mono); letter-spacing: 0.08em; }
 .site-footer__base {
   margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line);
@@ -305,19 +402,24 @@ h1, h2, h3, p, figure, ol { margin: 0; }
   font: 400 12px/1.5 var(--font-mono); color: var(--ink-muted);
 }
 
-/* 7. PLACEHOLDERS — delete this block once all team text is in ------------- */
+/* 9. PLACEHOLDERS — delete this block once all team text is in ------------- */
 .todo {
   display: inline-block;
   font: 400 14px/1.5 var(--font-mono);
   letter-spacing: 0; color: var(--accent);
-  border: 1px dashed var(--accent); padding: 10px 14px;
+  border: 1px dashed currentColor; padding: 10px 14px;
 }
+.todo--sm { font-size: 13px; }
+.todo--match { color: inherit; }   /* placeholder takes the colour of the text it stands in for */
 
-/* 8. PHONE / TABLET -------------------------------------------------------- */
+/* 10. PHONE / TABLET ------------------------------------------------------- */
+@media (max-width: 1000px) {
+  .people { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 860px) {
   .wrap { padding: 0 var(--space-4); }
   .site-nav {
-    position: absolute; top: 100%; left: var(--space-4); right: var(--space-4);
+    position: absolute; top: 100%; left: var(--space-4); right: var(--space-4); z-index: 20;
     flex-direction: column; align-items: stretch; gap: 0;
     background: var(--black); border: 1px solid #2b3236; padding: var(--space-2) var(--space-4) var(--space-4);
     display: none;
@@ -326,20 +428,38 @@ h1, h2, h3, p, figure, ol { margin: 0; }
   .site-nav__link { padding: 14px 0; border-bottom: 1px solid #2b3236; }
   .site-nav .btn { margin-top: var(--space-4); justify-content: center; }
   .menu-toggle { display: inline-flex; align-items: center; }
+  .site-header__logo img { width: 72px; }
   .hero { min-height: 720px; }
   .hero__content { padding-top: 140px; padding-bottom: 88px; }
+  .h-section { font-size: 38px; }
+  .h-page { font-size: 44px; }
   .about { padding: var(--space-16) 0; }
-  .about__photo { margin-top: 0; }
-  .projects { padding: var(--space-16) 0 var(--space-24); }
-  .project:nth-child(2), .project:nth-child(3) { margin-top: 0; }
-  .projects__list { gap: var(--space-16); }
-  .values { padding: var(--space-16) 0; }
+  .about__photo { margin: 0; }
+  .vmp { padding: var(--space-16) 0; }
+  .vmp__grid { grid-template-columns: 1fr; gap: var(--space-12); }
+  .vmp__item { padding: 0; }
+  .home-team, .home-projects { padding: var(--space-16) 0 var(--space-24); }
+  .home-team__photos, .home-projects__photos { padding-bottom: 0; }
+  .home-team__inset, .home-projects__inset { position: static; width: 70%; margin: 16px 0 0 auto; }
+  .home-projects__text h2 { font-size: 40px; }
   .partner { padding: 40px 24px 48px; }
   .join { margin-top: 0; }
   .join__body { padding: var(--space-6) var(--space-6) var(--space-8); }
+  .page-header__body { padding-top: 64px; padding-bottom: 72px; }
+  .page-section { padding: var(--space-16) 0; }
+  .project-list { padding: var(--space-16) 0 var(--space-24); }
+  .project-list .wrap { gap: var(--space-24); }
+  .prow, .prow--flip { flex-direction: column; align-items: stretch; gap: var(--space-8); }
+  .prow--flip .prow__media { order: 2; }
+  .prow__text, .prow__media { flex: none; }
+  .closing__text { font-size: 24px; }
+}
+@media (max-width: 640px) {
+  .people { grid-template-columns: 1fr; }
+  .person__photo, .join-card { width: 100%; }
 }
 
-/* 9. REDUCED MOTION -------------------------------------------------------- */
+/* 11. REDUCED MOTION ------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }

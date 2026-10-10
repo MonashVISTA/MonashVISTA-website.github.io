@@ -45,6 +45,17 @@
     reveals.forEach(function (el) { el.classList.add('is-in'); });
   }
 
+  /* 3b. "Read more" on supervisor bios (Team page) ------------------------ */
+  document.querySelectorAll('.read-more').forEach(function (btn) {
+    var bio = document.getElementById(btn.getAttribute('aria-controls'));
+    if (!bio) return;
+    btn.addEventListener('click', function () {
+      var open = bio.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Show less ↑' : 'Read more ↓';
+    });
+  });
+
   /* 4. Hero point field --------------------------------------------------- */
   var hero = document.querySelector('.hero');
   var canvas = document.querySelector('.hero__field');
